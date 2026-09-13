@@ -14,7 +14,7 @@ import { parseVodId } from "@/lib/validate";
 
 export async function generateMetadata({
   params,
-}: PageProps<"/drama/[vod_id]">): Promise<Metadata> {
+}: { params: Promise<{ vod_id: string }> }): Promise<Metadata> {
   const { vod_id } = await params;
   if (!parseVodId(vod_id)) return { title: "Drama" };
   try {
@@ -37,7 +37,7 @@ export async function generateMetadata({
 
 export default async function DramaDetailPage({
   params,
-}: PageProps<"/drama/[vod_id]">) {
+}: { params: Promise<{ vod_id: string }> }) {
   const { vod_id } = await params;
   const vodId = parseVodId(vod_id);
   if (!vodId) notFound();

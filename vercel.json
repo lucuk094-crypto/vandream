@@ -1,16 +1,19 @@
 {
   "buildCommand": "npm run build",
-  "devCommand": "npm run dev",
-  "installCommand": "npm install",
   "framework": "nextjs",
-  "regions": ["sin1"],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
+  ],
   "headers": [
     {
       "source": "/api/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "s-maxage=60, stale-while-revalidate=300"
+          "value": "public, s-maxage=60, stale-while-revalidate=120"
         }
       ]
     }

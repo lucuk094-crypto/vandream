@@ -10,7 +10,7 @@ import { parseEpisode, parseVodId } from "@/lib/validate";
 
 export async function generateMetadata({
   params,
-}: PageProps<"/watch/[vod_id]/[episode]">): Promise<Metadata> {
+}: { params: Promise<{ vod_id: string; episode: string }> }): Promise<Metadata> {
   const { vod_id, episode } = await params;
   const ep = parseEpisode(episode);
   const vodId = parseVodId(vod_id);
@@ -37,7 +37,7 @@ export async function generateMetadata({
  */
 export default async function WatchPage({
   params,
-}: PageProps<"/watch/[vod_id]/[episode]">) {
+}: { params: Promise<{ vod_id: string; episode: string }> }) {
   const { vod_id, episode } = await params;
   const vodId = parseVodId(vod_id);
   const ep = parseEpisode(episode);

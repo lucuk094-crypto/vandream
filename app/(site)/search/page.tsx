@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default async function SearchPage({
   searchParams,
-}: PageProps<"/search">) {
+}: { searchParams: Promise<{ q?: string }> }) {
   const { q } = await searchParams;
   return <SearchPageClient initialQ={typeof q === "string" ? q : ""} />;
 }

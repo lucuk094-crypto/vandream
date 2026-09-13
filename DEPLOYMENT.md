@@ -1,199 +1,207 @@
-# Panduan Deployment ke Vercel
+# Van Dream - Deployment Guide untuk Vercel
 
-## ✅ Status Proyek
-- ✅ Build berhasil tanpa error
-- ✅ TypeScript compiled successfully
-- ✅ Semua route berfungsi dengan baik
-- ✅ Konfigurasi Next.js optimal
-- ✅ Environment variables sudah dikonfigurasi
+## Status Build
+✅ **Build SUCCESSFUL** - Siap untuk deployment ke Vercel
 
-## 🚀 Langkah Deployment ke Vercel
+## Perubahan yang Telah Dilakukan
 
-### 1. Persiapan Repository
+### 1. Fixed Build Errors
+- ✅ Downgrade dari Next.js 16.3.5 + React 19 → Next.js 15.1.6 + React 18.3.1
+- ✅ Fix TypeScript errors (PageProps → explicit types)
+- ✅ Fix ESLint configuration
+- ✅ Remove invalid next.config options
 
-Pastikan proyek sudah ada di Git repository (GitHub, GitLab, atau Bitbucket):
+### 2. Performance Optimizations
+- ✅ Reduced API timeout: 30s → 10s
+- ✅ Optimized cache revalidation times
+- ✅ Static generation for homepage
+- ✅ Added vercel.json configuration
+
+### 3. Configuration Files
+- ✅ `vercel.json` - Deployment configuration dengan caching headers
+- ✅ `.env.example` - Template untuk environment variables
+- ✅ `.env.local` - Local environment (JANGAN commit!)
+- ✅ `.gitignore` - Memastikan .env files tidak tercommit
+
+## Langkah Deployment ke Vercel
+
+### Pre-Deployment Checklist
+- [ ] Pastikan NUNOMIX_TOKEN valid dan tersimpan dengan aman
+- [ ] Test build lokal: `npm run build` berhasil
+- [ ] Test run lokal: `npm start` berjalan tanpa error
+- [ ] Commit semua perubahan ke Git repository
+
+### Step 1: Push ke Git Repository
 
 ```bash
-# Jika belum init git
+# Initialize git jika belum
 git init
 
-# Add semua file
+# Add all files
 git add .
 
 # Commit
-git commit -m "Initial commit - Van Dream Drama Streaming"
+git commit -m "Ready for Vercel deployment"
 
-# Push ke remote repository
-git remote add origin YOUR_REPOSITORY_URL
+# Add remote (ganti dengan URL repo Anda)
+git remote add origin https://github.com/username/vandream.git
+
+# Push ke main branch
 git push -u origin main
 ```
 
-### 2. Deploy ke Vercel
+### Step 2: Deploy ke Vercel
 
-#### Opsi A: Via Vercel Dashboard (Recommended)
+1. **Buka Vercel Dashboard**
+   - Login ke https://vercel.com
+   - Click "Add New" → "Project"
 
-1. **Buka [vercel.com](https://vercel.com)** dan login/daftar
-2. Klik **"Add New Project"**
-3. **Import Repository**:
-   - Pilih GitHub/GitLab/Bitbucket
-   - Cari repository "vandream"
-   - Klik **Import**
-4. **Configure Project**:
-   - Framework Preset: **Next.js** (auto-detected)
-   - Root Directory: `vandream` (jika ada parent folder) atau biarkan `.` (root)
-   - Build Command: `npm run build` (default)
-   - Output Directory: `.next` (default)
-5. **Environment Variables** - Tambahkan variabel berikut:
-   ```
-   NUNOMIX_BASE_URL=https://nunodrama.my.id/api/nunomix
-   NUNOMIX_TOKEN=your-actual-token-here
-   SITE_URL=https://your-domain.vercel.app
-   ```
+2. **Import Repository**
+   - Connect GitHub/GitLab account jika belum
+   - Select repository vandream
+   - Click "Import"
+
+3. **Configure Project**
+   - Framework Preset: **Next.js** (auto-detected ✅)
+   - Root Directory: `./` (default)
+   - Build Command: `npm run build` (default ✅)
+   - Output Directory: `.next` (default ✅)
+   - Install Command: `npm install` (default ✅)
+
+4. **Environment Variables** (PENTING!)
    
-   > ⚠️ **PENTING**: Pastikan `NUNOMIX_TOKEN` diisi dengan token yang valid!
+   Tambahkan 3 environment variables di Vercel:
    
-6. Klik **Deploy**
-7. Tunggu hingga deployment selesai (biasanya 2-5 menit)
+   | Key | Value | Example |
+   |-----|-------|---------|
+   | `NUNOMIX_BASE_URL` | `https://nunodrama.my.id/api/nunomix` | (URL API) |
+   | `NUNOMIX_TOKEN` | `your-token-here` | ⚠️ RAHASIA! |
+   | `SITE_URL` | `https://your-domain.vercel.app` | (domain Vercel Anda) |
+   
+   **Apply to:** Production, Preview, Development (centang semua)
 
-#### Opsi B: Via Vercel CLI
+5. **Deploy!**
+   - Click "Deploy"
+   - Wait ~2-3 menit untuk build selesai
+   - ✅ Project deployed!
 
-```bash
-# Install Vercel CLI
-npm i -g vercel
+### Step 3: Verify Deployment
 
-# Login
-vercel login
+Test semua fitur di production:
 
-# Deploy
-cd vandream
-vercel
+- [ ] Homepage loading dengan data drama
+- [ ] Carousel hero berfungsi
+- [ ] Klik drama card → detail page muncul
+- [ ] Episode list tampil di detail page
+- [ ] Video player berfungsi (klik episode)
+- [ ] Search drama berfungsi
+- [ ] Continue Watching works
+- [ ] Favorites feature works
+- [ ] Mobile navigation responsive
 
-# Ikuti prompt untuk configure project
-# Pastikan environment variables sudah diset via dashboard
+### Step 4: Custom Domain (Opsional)
+
+1. Go to Project Settings → Domains
+2. Add your custom domain
+3. Update DNS records (A/CNAME):
+   ```
+   Type: CNAME
+   Name: @
+   Value: cname.vercel-dns.com
+   ```
+4. Update `SITE_URL` env variable:
+   ```
+   SITE_URL=https://yourdomain.com
+   ```
+5. Redeploy untuk apply perubahan
+
+## Troubleshooting
+
+### Build Fails
+
+**Error: "NUNOMIX_TOKEN is not set"**
+```
+✗ Solution: Add NUNOMIX_TOKEN to Vercel environment variables
 ```
 
-### 3. Konfigurasi Environment Variables
+**Error: "Cannot find module"**
+```
+✗ Solution: npm install mungkin gagal
+  → Check build logs
+  → Pastikan package.json valid
+```
 
-Setelah deployment pertama, tambahkan/edit environment variables:
+### Runtime Errors
 
-1. Buka **Project Settings** → **Environment Variables**
-2. Tambahkan variabel untuk **Production**, **Preview**, dan **Development**:
+**500 Error pada /api/* routes**
+```
+✗ Check Vercel Functions logs:
+  → Dashboard → Functions tab
+  → Click function name untuk lihat logs
+```
 
-| Variable | Value | Description |
-|----------|-------|-------------|
-| `NUNOMIX_BASE_URL` | `https://nunodrama.my.id/api/nunomix` | Base URL API NunoMix |
-| `NUNOMIX_TOKEN` | `your-token-here` | Token API (wajib diisi!) |
-| `SITE_URL` | `https://your-domain.vercel.app` | URL production untuk metadata |
+**Data drama tidak muncul**
+```
+✗ Kemungkinan:
+  1. NUNOMIX_TOKEN invalid → check di Vercel env vars
+  2. API timeout → check function logs
+  3. Network error → check upstream API status
+```
 
-3. Klik **Save**
-4. **Redeploy** project agar environment variables diterapkan
+**"Loading..." tidak selesai**
+```
+✗ Kemungkinan:
+  1. API response slow (>10s timeout)
+  2. Upstream API down
+  → Check browser console & network tab
+```
 
-### 4. Custom Domain (Opsional)
+### Performance Issues
 
-Untuk menggunakan domain sendiri:
+**Slow initial load**
+```
+✓ Solutions:
+  - Cache headers sudah dikonfigurasi di vercel.json
+  - Consider upgrading Vercel plan untuk better edge caching
+  - Monitor via Vercel Analytics
+```
 
-1. Buka **Project Settings** → **Domains**
-2. Klik **Add Domain**
-3. Masukkan domain Anda (contoh: `vandream.com`)
-4. Ikuti instruksi untuk setup DNS:
-   - Untuk subdomain: tambahkan CNAME record ke `cname.vercel-dns.com`
-   - Untuk root domain: tambahkan A record sesuai instruksi Vercel
-5. Tunggu DNS propagation (5-60 menit)
-6. Update `SITE_URL` environment variable dengan domain baru
-7. Redeploy
+## Post-Deployment
 
-### 5. Verifikasi Deployment
+### Monitoring
+- Enable Vercel Analytics untuk track performance
+- Check error logs secara berkala di Functions tab
+- Monitor API usage dari NUNOMIX dashboard (jika ada)
 
-Setelah deployment berhasil, verifikasi:
+### Updates
+```bash
+# Untuk update code:
+git add .
+git commit -m "Your changes"
+git push origin main
 
-- ✅ Buka URL production
-- ✅ Homepage memuat drama list
-- ✅ Coba search drama
-- ✅ Coba play video
-- ✅ Check favorites & continue watching
-- ✅ Test responsive (mobile & desktop)
+# Vercel akan auto-deploy setiap push ke main branch
+```
 
-## 🔧 Troubleshooting
+### Environment Variables Update
+1. Go to Project Settings → Environment Variables
+2. Edit variable yang ingin diubah
+3. Click "Save"
+4. **Redeploy** untuk apply perubahan (klik Deployments → tiga titik → Redeploy)
 
-### Error: "NUNOMIX_TOKEN is not set"
+## Kontak & Support
 
-**Solusi**: 
-- Pastikan environment variable `NUNOMIX_TOKEN` sudah diset di Vercel
-- Redeploy setelah menambahkan variable
-- Pastikan token tidak di-encode (gunakan token mentah)
-
-### Error: "Something went wrong"
-
-**Solusi**:
-- Check Vercel Function Logs di dashboard
-- Verifikasi API token masih valid
-- Pastikan `NUNOMIX_BASE_URL` benar
-
-### Build Failed
-
-**Solusi**:
-- Check build logs di Vercel
-- Pastikan semua dependencies ada di `package.json`
-- Verifikasi Node.js version compatible (18.x atau higher)
-
-### Video Tidak Play
-
-**Solusi**:
-- Check browser console untuk error CORS
-- Verifikasi `/api/stream` endpoint working
-- Test dengan video player lain
-
-## 📊 Performance Optimization
-
-Proyek sudah dioptimasi dengan:
-
-- ✅ Server-side caching (10m - 1h per endpoint)
-- ✅ Static page generation untuk routes statis
-- ✅ Image lazy loading
-- ✅ Code splitting otomatis
-- ✅ Tailwind CSS tree-shaking
-- ✅ HLS.js untuk video streaming
-
-## 🔒 Security Checklist
-
-- ✅ API token tersimpan di environment variables (tidak di code)
-- ✅ Server-only imports untuk API client
-- ✅ Input validation di semua API routes
-- ✅ Error messages tidak expose data sensitif
-- ✅ CORS handled dengan baik
-- ✅ `.env.local` di .gitignore
-
-## 📱 Monitoring
-
-Setelah live, monitor via Vercel dashboard:
-
-- **Analytics**: Traffic, page views, countries
-- **Speed Insights**: Core Web Vitals, performance
-- **Function Logs**: API errors, latency
-- **Deployment Logs**: Build success/failure
-
-## 🎯 Next Steps
-
-Setelah deployment berhasil:
-
-1. ✅ Test semua fitur di production
-2. ✅ Setup custom domain (jika ada)
-3. ✅ Monitor analytics & performance
-4. ✅ Tambahkan meta tags/SEO optimization
-5. ✅ Setup error tracking (Sentry, LogRocket, dll)
-
-## 📞 Support
-
-Jika ada masalah saat deployment:
-
-- Check [Vercel Documentation](https://vercel.com/docs)
-- Check [Next.js Documentation](https://nextjs.org/docs)
-- Review project README.md untuk detail teknis
-- Check GitHub Issues untuk project ini
+Jika ada masalah:
+1. Check logs di Vercel Dashboard → Functions
+2. Check browser console untuk client errors
+3. Verify environment variables configured correctly
+4. Test locally dengan `npm run build && npm start`
 
 ---
 
-**Last Updated**: 2026-09-13  
-**Version**: 1.0.0  
-**Framework**: Next.js 16.3.5  
-**Node Version**: 18.x or higher
+**Build Date:** 2026-09-13  
+**Next.js Version:** 15.1.6  
+**React Version:** 18.3.1  
+**Node Version Required:** 18.x or later
+
+✅ Project siap deploy ke Vercel!

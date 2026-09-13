@@ -195,3 +195,100 @@ Other observed behaviors:
 | Upstream `HTTP 401` in server log | Token invalid. Store it **raw** (URL-decoded) in `.env.local` — the client URL-encodes it automatically; a pre-encoded token gets double-encoded and fails. |
 | “Video tidak dapat diputar.” | That episode's stream failed; use RETRY. Check the server log for the `/api/stream` error. |
 | Posters broken in browser | The poster CDN may block your origin — colorful fallback tiles are shown automatically. |
+
+
+---
+
+## Performance Optimizations
+
+1. **API Caching**: Server-side responses are cached using Next.js Data Cache:
+   - Drama list: 60s
+   - Recommendations: 120s
+   - Detail pages: 600s (10 min)
+   - Stream URLs: 30s (short-lived)
+
+2. **Static Generation**: Homepage and static pages are pre-rendered at build time
+
+3. **Image Optimization**: Uses Next.js Image component with remote patterns configured
+
+4. **Timeout Configuration**: API requests timeout after 10 seconds to prevent hanging
+
+5. **Infinite Scroll**: Pagination with IntersectionObserver for smooth loading
+
+## Vercel Deployment Guide
+
+### Quick Deploy
+
+1. **Push to Git**: 
+   ```bash
+   git init
+   git add .
+   git commit -m "Initial commit"
+   git remote add origin your-repo-url
+   git push -u origin main
+   ```
+
+2. **Import to Vercel**:
+   - Go to https://vercel.com/new
+   - Import your repository
+   - Framework: Next.js (auto-detected)
+
+3. **Environment Variables**:
+   Add these in Vercel Dashboard → Project Settings → Environment Variables:
+   ```
+   NUNOMIX_BASE_URL=https://nunodrama.my.id/api/nunomix
+   NUNOMIX_TOKEN=your-token-here
+   SITE_URL=https://your-domain.vercel.app
+   ```
+   
+   Apply to: Production, Preview, Development
+
+4. **Deploy**: Click "Deploy" and wait for build to complete
+
+### Build Settings
+- **Build Command**: `npm run build` (default)
+- **Output Directory**: `.next` (default)
+- **Install Command**: `npm install` (default)
+- **Node Version**: 18.x or later
+
+### Post-Deployment Checklist
+- [ ] Test homepage loading
+- [ ] Check drama detail pages
+- [ ] Verify video player functionality
+- [ ] Test search feature
+- [ ] Check mobile responsiveness
+- [ ] Verify Continue Watching works
+- [ ] Test Favorites feature
+
+### Troubleshooting Vercel
+
+| Issue | Solution |
+| ----- | -------- |
+| Build fails with "NUNOMIX_TOKEN is not set" | Add environment variable in Vercel dashboard |
+| 500 errors on API routes | Check function logs in Vercel dashboard → Functions tab |
+| Slow loading | Increase function timeout in vercel.json (if needed) |
+| Images not loading | Check `remotePatterns` in next.config.ts |
+
+### Custom Domain
+1. Go to Project Settings → Domains
+2. Add your domain
+3. Update DNS records as instructed
+4. Update `SITE_URL` environment variable to your custom domain
+
+---
+
+## Development Notes
+
+### Fixed Issues (Latest)
+- ✅ Downgraded from Next.js 16.3.5 + React 19 to Next.js 15.1.6 + React 18.3.1 (stability)
+- ✅ Fixed TypeScript errors with PageProps → explicit Promise types
+- ✅ Removed invalid `allowedDevOrigins` config
+- ✅ Fixed ESLint configuration imports
+- ✅ Reduced API timeout from 30s to 10s
+- ✅ Optimized cache revalidation times
+- ✅ Added vercel.json for deployment configuration
+
+### Known Limitations
+- React 19 causes build errors with Next.js 15/16 (useContext null)
+- Drama posters may fail to load if CDN blocks origin
+- Stream URLs may expire (short-lived tokens from upstream API)

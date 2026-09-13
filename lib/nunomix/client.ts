@@ -94,8 +94,8 @@ export async function request(
     res = await fetch(url.toString(), {
       headers: { accept: "application/json" },
       next: { revalidate: opts.revalidate ?? 300 },
-      // Add timeout prevention
-      signal: AbortSignal.timeout(30000), // 30 second timeout
+      // Timeout to prevent hanging requests
+      signal: AbortSignal.timeout(10000), // 10 second timeout
     });
   } catch (err) {
     console.error(

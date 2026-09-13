@@ -47,15 +47,9 @@ export const viewport: Viewport = {
 
 export default function RootLayout({
   children,
-}: LayoutProps<"/">) {
+}: { children: React.ReactNode }) {
   return (
     <html lang="id" className={`${manrope.variable} ${playfair.variable}`}>
-      <head>
-        {/* Warm up the upstream CDNs early (public media hosts, no secrets). */}
-        <link rel="preconnect" href="https://bxdgpro.hfbjz.top" key="preconnect-1" />
-        <link rel="preconnect" href="https://arifimass-apicore.hf.space" key="preconnect-2" />
-        <link rel="preconnect" href="https://nuno-proxy.arif-dimass.workers.dev" key="preconnect-3" />
-      </head>
       <body className="min-h-dvh">
         {children}
       </body>
